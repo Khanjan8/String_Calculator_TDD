@@ -11,8 +11,15 @@ function add(numbers) {
     numbers = parts[1];
   }
 
-  const parts = numbers.split(delimiter);
-  return parts.reduce((sum, num) => sum + parseInt(num), 0);
+  const parts = numbers.split(delimiter).map(Number);
+  const negatives = parts.filter(n => n < 0);
+
+  if (negatives.length > 0) 
+  {
+    throw new Error("negative numbers not allowed: " + negatives.join(','));
+  }
+
+  return parts.reduce((sum, num) => sum + num, 0);
 }
 
 module.exports = { add };
