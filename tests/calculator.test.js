@@ -1,33 +1,34 @@
 const { add } = require('../src/calculator');
 
-test('returns 0 for an empty string', () => {
-  expect(add("")).toBe(0);
+describe("Basic Addition Cases", () => {
+  test.each([
+    ["empty string", "", 0],
+    ["single number", "1", 1],
+    ["two comma-separated numbers", "1,2", 3],
+    ["multiple comma-separated numbers", "1,2,3,4", 10],
+    ["mixed commas and newlines", "1\n2,3", 6]
+  ])("returns correct sum for %s", (_, input, expected) => {
+    expect(add(input)).toBe(expected);
+  });
 });
 
-test('returns number when a single number is passed', () => {
-  expect(add("1")).toBe(1);
+describe("Custom Delimiter Support", () => {
+  test.each([
+    ["semicolon", "//;\n1;2", 3],
+    ["semicolon with newline", "//;\n1;2\n3", 6],
+    ["dollar symbol", "//$\n7$8$9", 24],
+    ["hash with comma and newline", "//#\n1#2,3\n4", 10]
+  ])("handles custom delimiter: %s", (_, input, expected) => {
+    expect(add(input)).toBe(expected);
+  });
 });
 
-test('returns sum of two comma-separated numbers', () => {
-  expect(add("1,2")).toBe(3);
-});
+describe("Negative Number Handling", () => {
+  test("throws error for single negative number", () => {
+    expect(() => add("1,-2,3")).toThrow("negative numbers not allowed: -2");
+  });
 
-test('returns sum of any number of comma-separated numbers', () => {
-  expect(add("1,2,3,4")).toBe(10);
-});
-
-test('handles newlines as valid delimiters', () => {
-  expect(add("1\n2,3")).toBe(6);
-});
-
-test('supports custom delimiter ;', () => {
-  expect(add("//;\n1;2")).toBe(3);
-});
-
-test('throws an error when input contains a negative number', () => {
-  expect(() => add("1,-2,3")).toThrow("negative numbers not allowed: -2");
-});
-
-test('throws an error listing all negative numbers', () => {
-  expect(() => add("-1,-4,5")).toThrow("negative numbers not allowed: -1,-4");
+  test("throws error for multiple negative numbers", () => {
+    expect(() => add("-1,-4,5")).toThrow("negative numbers not allowed: -1,-4");
+  });
 });
